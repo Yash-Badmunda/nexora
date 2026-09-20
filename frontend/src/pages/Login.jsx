@@ -7,7 +7,7 @@ import { Seo } from "../components/ui";
 import { apiError } from "../lib/api";
 
 export default function Login({ admin = false }) {
-  const { login, register, user, ready } = useAuth();
+  const { login, register, logout, user, ready } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({ name: "", email: "", password: "", business: "" });
@@ -15,8 +15,10 @@ export default function Login({ admin = false }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (ready && user) navigate(user.role === "admin" ? "/admin/dashboard" : "/dashboard", { replace: true });
-  }, [ready, user, navigate]);
+    if (ready && user && !(admin && user.role !== "admin")) {
+      navigate(user.role === "admin" ? "/admin/dashboard" : "/dashboard", { replace: true });
+    }
+  }, [ready, user, navigate, admin]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -31,6 +33,7 @@ export default function Login({ admin = false }) {
         u = await login(form.email, form.password);
       }
       if (admin && u.role !== "admin") {
+        await logout();
         setError("This login is for administrators only.");
         setLoading(false);
         return;

@@ -141,6 +141,8 @@ async def check_lockout(identifier: str):
     rec = await db.login_attempts.find_one({"identifier": identifier})
     if rec and rec.get("count", 0) >= 5:
         locked_until = rec.get("locked_until")
+        if locked_until and locked_until.tzinfo is None:
+            locked_until = locked_until.replace(tzinfo=timezone.utc)
         if locked_until and locked_until > datetime.now(timezone.utc):
             raise HTTPException(status_code=429, detail="Too many failed attempts. Try again later.")
 
