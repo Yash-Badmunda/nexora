@@ -1,0 +1,36 @@
+# ---- dependencies ----
+node_modules/
+**/node_modules/
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# ---- env / SECRETS (never commit real keys) ----
+.env
+**/.env
+.env.local
+**/.env.local
+*.pem
+*.key
+
+# keep example env files
+!.env.example
+!**/.env.example
+
+# ---- builds ----
+frontend/build/
+build/
+dist/
+
+# ---- logs / tmp ----
+*.log
+.cache/
+.pytest_cache/
+test_reports/
+
+# ---- os / editor ----
+.DS_Store
+.idea/
+.vscode/

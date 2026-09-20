@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: nexora-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: nexora-backend
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "8001:8001"
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DB_NAME: nexora
+      FRONTEND_URL: http://localhost:3000
+      JWT_SECRET: change-me-to-a-64-char-random-hex-in-real-use
+      ADMIN_EMAIL: admin@nexora.in
+      ADMIN_PASSWORD: NexoraAdmin@2026
+      DEMO_CLIENT_EMAIL: client@nexora.in
+      DEMO_CLIENT_PASSWORD: NexoraClient@2026
+      EMAIL_FROM_NAME: NEXORA
+      EMAIL_REPLY_TO: yashbadmunda@gmail.com
+      QUOTE_NOTIFICATION_EMAIL: yashbadmunda@gmail.com
+      BUSINESS_EMAIL: yashbadmunda@gmail.com
+      AI_PROVIDER: openai
+      OPENAI_MODEL: gpt-4o-mini
+      # ---- Fill these in to enable email + AI locally (leave blank to run without) ----
+      EMERGENT_EMAIL_KEY: ""
+      OPENAI_API_KEY: ""
+
+  frontend:
+    build: ./frontend
+    container_name: nexora-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:8001
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_WHATSAPP_NUMBER: "919466058904"
+      NEXT_PUBLIC_GA_ID: ""
+      WDS_SOCKET_PORT: "3000"
+
+volumes:
+  mongo_data:
