@@ -34,3 +34,7 @@ test_reports/
 .DS_Store
 .idea/
 .vscode/
+.env.*
+*.env
+credentials.json
+.credentials
