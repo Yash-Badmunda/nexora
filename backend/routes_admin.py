@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field
 from bson import ObjectId
 from datetime import datetime, timezone
+import asyncio
 
 from core import (db, require_admin, hash_password, now_iso, new_id, audit,
                   public_user, rate_limit, client_ip)
@@ -227,7 +228,7 @@ async def ai_summarize(body: SummarizeIn, admin: dict = Depends(require_admin)):
     lead = await db.leads.find_one({"lead_id": body.lead_id}, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
-    summary = ai.summarize_lead(lead)
+    summary = await asyncio.to_thread(ai.summarize_lead, lead)
     temp = ai.classify_lead(lead)
     await db.leads.update_one({"lead_id": body.lead_id},
                               {"$set": {"ai_summary": summary, "lead_temp": temp}})

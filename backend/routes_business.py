@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import asyncio
 from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
@@ -63,7 +64,7 @@ async def submit_quote(body: QuoteIn, request: Request):
         "config": cfg, "source": "quote_configurator", "created_at": now_iso(),
     }
     lead_temp = ai.classify_lead(data)
-    ai_summary = ai.summarize_lead(data)
+    ai_summary = await asyncio.to_thread(ai.summarize_lead, data)
 
     quote_id = new_id("qt")
     quote_doc = {
@@ -122,7 +123,7 @@ async def submit_contact(body: ContactIn, request: Request):
     data["email"] = data["email"].lower()
     data["created_at"] = now_iso()
     lead_temp = ai.classify_lead(data)
-    ai_summary = ai.summarize_lead(data)
+    ai_summary = await asyncio.to_thread(ai.summarize_lead, data)
 
     await db.leads.insert_one({
         "lead_id": new_id("ld"), "type": "contact", **data,
@@ -211,5 +212,5 @@ class ChatIn(BaseModel):
 @router.post("/ai/chat")
 async def ai_chat(body: ChatIn, request: Request):
     rate_limit(f"aichat:{client_ip(request)}", 15, 60)
-    reply = ai.chat_reply(body.message, body.history)
+    reply = await asyncio.to_thread(ai.chat_reply, body.message, body.history)
     return {"reply": reply, "available": ai.ai_available()}

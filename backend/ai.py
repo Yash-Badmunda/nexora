@@ -13,7 +13,7 @@ _client = None
 if OPENAI_API_KEY:
     try:
         from openai import OpenAI
-        _client = OpenAI(api_key=OPENAI_API_KEY)
+        _client = OpenAI(api_key=OPENAI_API_KEY, max_retries=0, timeout=12.0)
     except Exception as e:  # pragma: no cover
         logger.error(f"OpenAI init failed: {e}")
 
