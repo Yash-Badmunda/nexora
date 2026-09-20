@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Sitemap: https://1629de55-19b0-4bb1-b5f8-5b3086c0a8d8.preview.emergentagent.com/sitemap.xml

@@ -1,0 +1,9 @@
+{
+  "short_name": "NEXORA",
+  "name": "NEXORA — Build. Grow. Get Found.",
+  "icons": [{ "src": "nexora-logo.png", "type": "image/png", "sizes": "512x512" }],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#070a0d",
+  "background_color": "#070a0d"
+}
