@@ -169,5 +169,7 @@ async def startup():
         await db.leads.create_index("created_at")
     except Exception as e:
         logger.warning(f"Index creation: {e}")
+        
+    if os.environ.get("DEMO_MODE") == "true":
     await seed()
     logger.info("NEXORA API ready.")
