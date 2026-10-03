@@ -74,7 +74,7 @@ async def register(body: RegisterIn, request: Request, response: Response):
     access = create_access_token(str(res.inserted_id), email, "client")
     refresh = create_refresh_token(str(res.inserted_id))
     set_auth_cookies(response, access, refresh)
-    return {"user": public_user(doc), "token": access}
+    return {"user": public_user(doc)}
 
 
 @router.post("/login")
@@ -92,7 +92,7 @@ async def login(body: LoginIn, request: Request, response: Response):
     access = create_access_token(str(user["_id"]), email, user.get("role", "client"))
     refresh = create_refresh_token(str(user["_id"]))
     set_auth_cookies(response, access, refresh)
-    return {"user": public_user(user), "token": access}
+    return {"user": public_user(user)}
 
 
 @router.post("/logout")
@@ -139,7 +139,6 @@ async def forgot_password(body: ForgotIn, request: Request):
             "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
             "used": False, "created_at": now_iso(),
         })
-        print(f"[NEXORA] Password reset link: /reset-password?token={token}")
     return {"ok": True, "message": "If that email exists, a reset link has been sent."}
 
 
