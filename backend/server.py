@@ -142,8 +142,8 @@ async def seed():
     elif not verify_password(admin_pw, existing["password_hash"]):
         await db.users.update_one({"email": admin_email}, {"$set": {"password_hash": hash_password(admin_pw)}})
 
-    client_email = os.environ.get("DEMO_CLIENT_EMAIL", "client@nexora.in").lower()
-    client_pw = os.environ.get("DEMO_CLIENT_PASSWORD", "NexoraClient@2026")
+    client_email = os.environ["DEMO_CLIENT_EMAIL"].lower()
+    client_pw = os.environ["DEMO_CLIENT_PASSWORD"]
     client = await db.users.find_one({"email": client_email})
     if not client:
         res = await db.users.insert_one({"email": client_email, "password_hash": hash_password(client_pw),
@@ -169,6 +169,8 @@ async def startup():
     except Exception as e:
         logger.warning(f"Index creation: {e}")
         
-    if os.environ.get("DEMO_MODE") == "true":
-    await seed()
+    if os.environ.get("DEMO_MODE", "").lower() == "true":
+        await seed()
+    else:
+        logger.info("Demo seeding is disabled.")
     logger.info("NEXORA API ready.")
