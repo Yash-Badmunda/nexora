@@ -119,8 +119,15 @@ async def refresh(request: Request, response: Response):
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         access = create_access_token(str(user["_id"]), user["email"], user.get("role", "client"))
-        response.set_cookie("access_token", access, httponly=True, secure=True,
-                            samesite="none", max_age=43200, path="/")
+        response.set_cookie(
+            "access_token",
+            access,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=43200,
+            path="/",
+        )
         return {"ok": True}
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
